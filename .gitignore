@@ -1,0 +1,55 @@
+## Build outputs
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+
+## Dotnet / NuGet
+*.mdb
+*.pdb
+*.log
+*.dmp
+*.tmp
+*.tmp.*
+*.bak
+project.lock.json
+artifacts/
+packages/
+**/packages/*
+!**/packages/build/
+!.paket/
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## OS junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+## Avalonia / tooling
+*.skia.g.*
+*.axaml.g.cs
+*.xaml.g.cs
+
+## User config / local data
+*.db
+*.sqlite
+*.sqlite3
+*.cache
+*.log
+
+## Models and large assets (adjust if you want them tracked)
+Models/
+!Models/README.md
+
