@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace DisPix
 {
@@ -18,26 +20,51 @@ namespace DisPix
         private string? _selectedFilePath;
         private string _modelPath = "Models/generator.onnx";
         private bool _isModelAvailable = false;
+        private TextBlock? _engineStatusText;
+        private TextBlock? _strengthText;
+        private TextBox? _pathTextBox;
+        private TextBlock? _statusText;
+        private Button? _protectButton;
+        private Slider? _strengthSlider;
 
         public MainWindow()
         {
             InitializeComponent();
+            BindControls();
             CheckModelStatus();
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
+
+        private void BindControls()
+        {
+            _engineStatusText = this.FindControl<TextBlock>("EngineStatusText");
+            _strengthText = this.FindControl<TextBlock>("StrengthText");
+            _pathTextBox = this.FindControl<TextBox>("PathTextBox");
+            _statusText = this.FindControl<TextBlock>("StatusText");
+            _protectButton = this.FindControl<Button>("ProtectButton");
+            _strengthSlider = this.FindControl<Slider>("StrengthSlider");
         }
 
         private void CheckModelStatus()
         {
             _isModelAvailable = File.Exists(_modelPath);
-            EngineStatusText.Text = _isModelAvailable 
-                ? "AI Neural Network (generator.onnx active)" 
-                : "Mathematical Local Perturbation (Standard)";
+            if (_engineStatusText != null)
+            {
+                _engineStatusText.Text = _isModelAvailable
+                    ? "AI Neural Network (generator.onnx active)"
+                    : "Mathematical Local Perturbation (Standard)";
+            }
         }
 
         private void OnSliderChanged(object? sender, RangeBaseValueChangedEventArgs e)
         {
-            if (StrengthText != null)
+            if (_strengthText != null)
             {
-                StrengthText.Text = $"{(int)e.NewValue}%";
+                _strengthText.Text = $"{(int)e.NewValue}%";
             }
         }
 
@@ -53,8 +80,15 @@ namespace DisPix
             if (files != null && files.Count > 0)
             {
                 _selectedFilePath = files[0].Path.LocalPath;
-                PathTextBox.Text = _selectedFilePath;
-                StatusText.Text = "Image loaded.";
+                if (_pathTextBox != null)
+                {
+                    _pathTextBox.Text = _selectedFilePath;
+                }
+
+                if (_statusText != null)
+                {
+                    _statusText.Text = "Image loaded.";
+                }
             }
         }
 
@@ -62,13 +96,24 @@ namespace DisPix
         {
             if (string.IsNullOrEmpty(_selectedFilePath) || !File.Exists(_selectedFilePath))
             {
-                StatusText.Text = "Please select a valid image first.";
+                if (_statusText != null)
+                {
+                    _statusText.Text = "Please select a valid image first.";
+                }
                 return;
             }
 
-            ProtectButton.IsEnabled = false;
-            StatusText.Text = "Processing... Please wait.";
-            double strength = StrengthSlider.Value / 100.0;
+            if (_protectButton != null)
+            {
+                _protectButton.IsEnabled = false;
+            }
+
+            if (_statusText != null)
+            {
+                _statusText.Text = "Processing... Please wait.";
+            }
+
+            double strength = (_strengthSlider?.Value ?? 2) / 100.0;
 
             try
             {
@@ -86,15 +131,24 @@ namespace DisPix
                     }
                 });
 
-                StatusText.Text = $"Protected file saved as: {Path.GetFileName(outputPath)}";
+                if (_statusText != null)
+                {
+                    _statusText.Text = $"Protected file saved as: {Path.GetFileName(outputPath)}";
+                }
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Error: {ex.Message}";
+                if (_statusText != null)
+                {
+                    _statusText.Text = $"Error: {ex.Message}";
+                }
             }
             finally
             {
-                ProtectButton.IsEnabled = true;
+                if (_protectButton != null)
+                {
+                    _protectButton.IsEnabled = true;
+                }
             }
         }
 
@@ -108,7 +162,7 @@ namespace DisPix
 
         private void ApplyMathematicalNoise(string inputPath, string outputPath, double strength)
         {
-            using var image = Image.Load<Rgb24>(inputPath);
+            using var image = SixLabors.ImageSharp.Image.Load<Rgb24>(inputPath);
             var random = new Random();
 
             for (int y = 0; y < image.Height; y++)
@@ -136,7 +190,7 @@ namespace DisPix
 
         private void ApplyAiNoise(string inputPath, string outputPath, double strength)
         {
-            using var image = Image.Load<Rgb24>(inputPath);
+            using var image = SixLabors.ImageSharp.Image.Load<Rgb24>(inputPath);
             using var session = new InferenceSession(_modelPath);
 
             int modelWidth = 256; 
