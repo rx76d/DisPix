@@ -1,6 +1,7 @@
 ## Build outputs
 bin/
 obj/
+publ/
 publish/
 *.user
 *.suo
