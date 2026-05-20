@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DisPix.MainWindow"
+        Title="DisPix" 
+        Width="500" Height="420"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur">
+
+    <Border CornerRadius="8" BorderBrush="#4A82C3" BorderThickness="1.5" Margin="5">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#DCE6F2" Offset="0.0" />
+                <GradientStop Color="#B9CADF" Offset="0.4" />
+                <GradientStop Color="#9AB5D5" Offset="1.0" />
+            </LinearGradientBrush>
+        </Border.Background>
+
+        <Grid RowDefinitions="Auto, *, Auto" Margin="15">
+            <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                <TextBlock Text="DisPix" 
+                           FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" 
+                           Foreground="#1E395B" />
+                <TextBlock Text="Protects your images locally from AI scrapers" 
+                           FontFamily="Segoe UI" FontSize="11" 
+                           Foreground="#4F6D91" />
+            </StackPanel>
+
+            <Border Grid.Row="1" Background="#F2F5F9" CornerRadius="5" 
+                    BorderBrush="#96A9C5" BorderThickness="1" Padding="15">
+                <StackPanel Spacing="15" VerticalAlignment="Center">
+                    
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBox Name="PathTextBox" Grid.Column="0" IsReadOnly="True" 
+                                 Watermark="Select an image file..." Height="28" 
+                                 Background="White" BorderBrush="#ABC1DE" VerticalContentAlignment="Center"/>
+                        <Button Name="BrowseButton" Content="Browse..." Grid.Column="1" Margin="10,0,0,0" 
+                                Width="80" Height="28" Click="OnBrowseClicked" />
+                    </Grid>
+
+                    <StackPanel Spacing="5">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="Protection Strength (Noise Level):" Grid.Column="0" 
+                                       FontFamily="Segoe UI" FontSize="12" Foreground="#2A3E54"/>
+                            <TextBlock Name="StrengthText" Text="2%" Grid.Column="1" 
+                                       FontFamily="Segoe UI" FontSize="12" FontWeight="Bold" Foreground="#2A3E54"/>
+                        </Grid>
+                        <Slider Name="StrengthSlider" Minimum="1" Maximum="10" Value="2" 
+                                Margin="0,-5,0,0" ValueChanged="OnSliderChanged"/>
+                    </StackPanel>
+
+                    <Border Background="#E1E9F3" CornerRadius="4" Padding="10,5" BorderBrush="#BDCADA" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <TextBlock Text="Engine Mode:" FontSize="11" FontWeight="Bold" Foreground="#4F6D91"/>
+                            <TextBlock Name="EngineStatusText" Text="Determining..." FontSize="11" Foreground="#4F6D91"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="0,15,0,0">
+                <TextBlock Name="StatusText" Text="Ready" VerticalAlignment="Center" 
+                           FontFamily="Segoe UI" FontSize="11" Foreground="#2C415A" />
+                <Button Name="ProtectButton" Content="Apply Protection" Grid.Column="1" 
+                        Width="140" Height="30" FontWeight="Bold" Click="OnProtectClicked" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
